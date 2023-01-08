@@ -1,16 +1,27 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from numpy import loadtxt
+import tensorflow as tf
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def load_dataset():
+    dataset = loadtxt('pima-indians-diabetes.csv', delimiter=',')
+    return dataset[:, 0:8], dataset[:, 8]
 
 
-# Press the green button in the gutter to run the script.
+def build_model():
+    model = tf.keras.models.Sequential()
+    model.add(tf.keras.layers.Dense(24, input_shape=(8,), activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.2))
+    model.add(tf.keras.layers.Dense(12, activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.2))
+    model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+    return model
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print('Hello, world')
+    model = build_model()
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    X, y = load_dataset()
+    model.fit(X, y, epochs=150, batch_size=10)
+    _, accuracy = model.evaluate(X, y)
+    print('Accuracy: %.2f' % (accuracy * 100))
